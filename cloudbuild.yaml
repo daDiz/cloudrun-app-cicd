@@ -1,0 +1,31 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/my-first-project-466020/demo-flask-app:$COMMIT_SHA', '.']
+
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/my-first-project-466020/demo-flask-app:$COMMIT_SHA']
+
+- name: 'gcr.io/my-first-project-466020/demo-flask-app:$COMMIT_SHA'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      python -m pytest
+
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args:
+    - 'run'
+    - 'deploy'
+    - 'py-bq-load'
+    - '--image'
+    - 'gcr.io/my-first-project-466020/demo-flask-app:$COMMIT_SHA'
+    - '--region'
+    - 'us-central1'
+    - '--allow-unauthenticated'
+
+images:
+- 'gcr.io/my-first-project-466020/demo-flask-app:$COMMIT_SHA'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
