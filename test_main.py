@@ -13,6 +13,7 @@ def client():
 @patch.object(app_client, "get_table")
 def test_main_endpoint(mock_get_table, mock_load_table_from_uri, client):
     mock_load_job = MagicMock()
+
     mock_load_table_from_uri.return_value = mock_load_job
 
     mock_table = MagicMock()
